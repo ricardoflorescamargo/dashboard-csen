@@ -17,6 +17,8 @@ sheet_id = "1yPX4RkH9UAxRE5iDhrL1LD1htuaNuUKK"
 url_cursos = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet=CURSOS"
 
 df_cursos = pd.read_csv(url_cursos)
+df_cursos = df_cursos.loc[:, ~df_cursos.columns.str.contains("^Unnamed")]
+df_cursos = df_cursos.dropna(axis=1, how="all")
 
 # =========================
 # 2. Preparar datos
@@ -238,4 +240,17 @@ plt.tight_layout(rect=[0.02, 0.12, 0.98, 0.90])
 st.pyplot(fig)
 
 st.subheader("Matriz de cursos")
-st.dataframe(df_cursos, use_container_width=True)
+columnas_visibles = [
+    "NOMBRE DEL CURSO",
+    "LUGAR",
+    "ESTADO",
+    "FECHA INICIO",
+    "FECHA FINAL",
+    "RESPONSABLE",
+    "ACCIONES",
+    "COORDINADOR"
+]
+
+columnas_visibles = [c for c in columnas_visibles if c in df_cursos.columns]
+
+st.dataframe(df_cursos[columnas_visibles], use_container_width=True)
