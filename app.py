@@ -293,9 +293,9 @@ fig_interactivo.update_xaxes(
 fig_interactivo.update_yaxes(
     autorange="reversed",
     title="",
-    tickfont=dict(size=13, color="#082B63"),
-    automargin=False,
-    ticklabelposition="outside left"
+    tickfont=dict(size=12, color="#082B63"),
+    automargin=True,
+    ticklabelposition="outside"
 )
 
 fig_interactivo.update_layout(
@@ -303,7 +303,7 @@ fig_interactivo.update_layout(
     plot_bgcolor="white",
     paper_bgcolor="white",
     font=dict(size=13, color="#082B63"),
-    margin=dict(l=10, r=40, t=80, b=60),
+   margin=dict(l=420, r=40, t=80, b=60),
     legend_title_text="Estado",
     title=dict(
         text="Cronograma de Cursos Ordinarios 2026",
@@ -311,9 +311,7 @@ fig_interactivo.update_layout(
         xanchor="left",
         font=dict(size=22, color="#082B63")
     ),
-    yaxis=dict(
-        automargin=False
-    )
+  
 )
 
 st.plotly_chart(fig_interactivo, use_container_width=True)
