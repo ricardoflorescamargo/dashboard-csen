@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
 import matplotlib.dates as mdates
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from matplotlib.patches import Rectangle
 import textwrap
 
@@ -239,84 +241,131 @@ fig.legend(
 plt.tight_layout(rect=[0.02, 0.12, 0.98, 0.90])
 
 #st.pyplot(fig)
-st.subheader("Cronograma Interactivo")
+st.subheader("Cronograma interactivo avanzado")
 
-df_plot = df.copy()
-df_plot["TEXTO_FECHA"] = (
-    df_plot["FECHA INICIO"].dt.strftime("%d/%m")
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+
+df_go = df.copy()
+df_go = df_go.sort_values("FECHA INICIO").reset_index(drop=True)
+
+df_go["FECHA TEXTO"] = (
+    df_go["FECHA INICIO"].dt.strftime("%d/%m")
     + " - "
-    + df_plot["FECHA FINAL"].dt.strftime("%d/%m")
+    + df_go["FECHA FINAL"].dt.strftime("%d/%m")
 )
 
-fig_interactivo = px.timeline(
-    df_plot,
-    x_start="FECHA INICIO",
-    x_end="FECHA FINAL",
-    y="NOMBRE DEL CURSO",
-    color="ESTADO",
-    text="TEXTO_FECHA",
-    hover_data=["LUGAR", "RESPONSABLE", "ACCIONES", "COORDINADOR"],
-    color_discrete_map={
-        "EJECUCION": "#2E8B57",
-        "EJECUCIÓN": "#2E8B57",
-        "PROGRAMADO": "#1E63D6"
-    }
+fig_go = make_subplots(
+    rows=1,
+    cols=2,
+    column_widths=[0.42, 0.58],
+    specs=[[{"type": "table"}, {"type": "bar"}]],
+    horizontal_spacing=0.02
 )
 
-fig_interactivo.update_yaxes(
+fig_go.add_trace(
+    go.Table(
+        header=dict(
+            values=["N°", "CURSO", "LUGAR", "ESTADO", "RESP."],
+            fill_color="#082B63",
+            font=dict(color="white", size=13),
+            align="left",
+            height=34
+        ),
+        cells=dict(
+            values=[
+                list(range(1, len(df_go) + 1)),
+                df_go["NOMBRE DEL CURSO"],
+                df_go["LUGAR"],
+                df_go["ESTADO"],
+                df_go["RESPONSABLE"]
+            ],
+            fill_color=[
+                ["#FFFFFF" if i % 2 else "#F6F9FD" for i in range(len(df_go))]
+            ],
+            font=dict(color="#082B63", size=12),
+            align="left",
+            height=38
+        )
+    ),
+    row=1,
+    col=1
+)
+
+for estado, color in {
+    "EJECUCION": "#2E8B57",
+    "EJECUCIÓN": "#2E8B57",
+    "PROGRAMADO": "#1E63D6"
+}.items():
+
+    dff = df_go[df_go["ESTADO"] == estado]
+
+    fig_go.add_trace(
+        go.Bar(
+            x=dff["DURACION"],
+            y=dff["NOMBRE DEL CURSO"],
+            base=dff["FECHA INICIO"],
+            orientation="h",
+            name=estado,
+            marker=dict(color=color),
+            text=dff["FECHA TEXTO"],
+            textposition="outside",
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Inicio: %{base|%d/%m/%Y}<br>"
+                "Duración: %{x} días<br>"
+                "<extra></extra>"
+            )
+        ),
+        row=1,
+        col=2
+    )
+
+fig_go.update_yaxes(
     autorange="reversed",
-    title="",
-    tickfont=dict(size=13, color="#082B63"),
-    automargin=True
+    showticklabels=False,
+    row=1,
+    col=2
 )
 
-fig_interactivo.update_traces(
-    textposition="outside",
-    textfont=dict(size=12, color="#082B63"),
-    marker_line_color="white",
-    marker_line_width=1.5,
-    width=0.42
-)
-
-fig_interactivo.update_xaxes(
+fig_go.update_xaxes(
+    type="date",
     side="top",
-    showgrid=True,
-    gridcolor="#D8E0EA",
-    linecolor="#082B63",
-    linewidth=1,
-    mirror=True,
     tickformat="%b %Y",
     dtick="M1",
-    title=""
+    showgrid=True,
+    gridcolor="#D8E0EA",
+    range=["2026-03-01", "2026-09-30"],
+    row=1,
+    col=2
 )
 
-fig_interactivo.update_yaxes(
-    autorange="reversed",
-    title="",
-    tickfont=dict(size=12, color="#082B63"),
-    automargin=True,
-    ticklabelposition="outside"
-)
-
-fig_interactivo.update_layout(
-    height=760,
-    plot_bgcolor="white",
-    paper_bgcolor="white",
-    font=dict(size=13, color="#082B63"),
-   margin=dict(l=420, r=40, t=80, b=60),
-    legend_title_text="Estado",
+fig_go.update_layout(
     title=dict(
         text="Cronograma de Cursos Ordinarios 2026",
         x=0.01,
         xanchor="left",
-        font=dict(size=22, color="#082B63")
+        font=dict(size=24, color="#082B63")
     ),
-  
+    height=720,
+    barmode="overlay",
+    bargap=0.45,
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    font=dict(color="#082B63"),
+    margin=dict(l=20, r=40, t=90, b=60),
+    legend=dict(
+        orientation="h",
+        y=-0.08,
+        x=0.45
+    )
 )
 
-st.plotly_chart(fig_interactivo, use_container_width=True)
+st.plotly_chart(fig_go, use_container_width=True)
 
 st.caption("Actualizado: 24 de junio de 2026")
+
+
 
 st.subheader("Matriz de cursos")
 columnas_visibles = [
