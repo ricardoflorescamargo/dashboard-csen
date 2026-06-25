@@ -291,11 +291,11 @@ fig_interactivo.update_xaxes(
 )
 
 fig_interactivo.update_yaxes(
-    showgrid=True,
-    gridcolor="#EEF2F7",
-    linecolor="#082B63",
-    linewidth=1,
-    mirror=True
+    autorange="reversed",
+    title="",
+    tickfont=dict(size=13, color="#082B63"),
+    automargin=False,
+    ticklabelposition="outside left"
 )
 
 fig_interactivo.update_layout(
@@ -303,7 +303,7 @@ fig_interactivo.update_layout(
     plot_bgcolor="white",
     paper_bgcolor="white",
     font=dict(size=13, color="#082B63"),
-    margin=dict(l=30, r=40, t=80, b=60),
+    margin=dict(l=10, r=40, t=80, b=60),
     legend_title_text="Estado",
     title=dict(
         text="Cronograma de Cursos Ordinarios 2026",
@@ -311,11 +311,8 @@ fig_interactivo.update_layout(
         xanchor="left",
         font=dict(size=22, color="#082B63")
     ),
-    xaxis=dict(
-        range=[
-            pd.Timestamp("2026-03-01"),
-            pd.Timestamp("2026-09-30")
-        ]
+    yaxis=dict(
+        automargin=False
     )
 )
 
