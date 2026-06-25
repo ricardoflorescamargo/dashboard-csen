@@ -247,12 +247,8 @@ fig_interactivo = px.timeline(
     x_end="FECHA FINAL",
     y="NOMBRE DEL CURSO",
     color="ESTADO",
-    hover_data=[
-        "LUGAR",
-        "RESPONSABLE",
-        "ACCIONES",
-        "COORDINADOR"
-    ],
+    hover_data=["LUGAR", "RESPONSABLE", "ACCIONES", "COORDINADOR"],
+    text=df["FECHA INICIO"].dt.strftime("%d/%m") + " - " + df["FECHA FINAL"].dt.strftime("%d/%m"),
     color_discrete_map={
         "EJECUCION": "#2E8B57",
         "EJECUCIÓN": "#2E8B57",
@@ -260,16 +256,48 @@ fig_interactivo = px.timeline(
     }
 )
 
-fig_interactivo.update_yaxes(autorange="reversed")
+fig_interactivo.update_yaxes(
+    autorange="reversed",
+    tickfont=dict(size=11),
+    title="",
+)
+
+fig_interactivo.update_traces(
+    textposition="inside",
+    textfont=dict(size=11, color="white"),
+    marker_line_color="white",
+    marker_line_width=1,
+    width=0.45
+)
+
+fig_interactivo.update_xaxes(
+    side="top",
+    showgrid=True,
+    gridcolor="#D8E0EA",
+    tickformat="%d/%m/%Y",
+    dtick="M1",
+    title=""
+)
+
+fig_interactivo.update_yaxes(
+    showgrid=True,
+    gridcolor="#EEF2F7"
+)
 
 fig_interactivo.update_layout(
-    height=700,
+    height=750,
     title="Cronograma Interactivo de Cursos",
-    xaxis_title="Fecha",
-    yaxis_title="Curso"
+    title_font=dict(size=20, color="#082B63"),
+    plot_bgcolor="white",
+    paper_bgcolor="white",
+    font=dict(size=12, color="#082B63"),
+    margin=dict(l=260, r=40, t=90, b=60),
+    legend_title_text="Estado"
 )
 
 st.plotly_chart(fig_interactivo, use_container_width=True)
+
+st.caption("Actualizado: 24 de junio de 2026")
 
 st.subheader("Matriz de cursos")
 columnas_visibles = [
