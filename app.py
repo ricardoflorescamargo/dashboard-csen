@@ -50,33 +50,15 @@ df["PERIODO"] = (
 # Filtros
 # =========================
 
-st.subheader("Filtros")
+st.subheader("Filtrar por estado")
 
-col_f1, col_f2, col_f3 = st.columns(3)
-
-estado_sel = col_f1.multiselect(
-    "Estado",
-    sorted(df["ESTADO"].dropna().unique()),
+estado_sel = st.multiselect(
+    "Estado del curso",
+    options=sorted(df["ESTADO"].dropna().unique()),
     default=sorted(df["ESTADO"].dropna().unique())
 )
 
-responsable_sel = col_f2.multiselect(
-    "Responsable",
-    sorted(df["RESPONSABLE"].dropna().unique()),
-    default=sorted(df["RESPONSABLE"].dropna().unique())
-)
-
-lugar_sel = col_f3.multiselect(
-    "Lugar",
-    sorted(df["LUGAR"].dropna().unique()),
-    default=sorted(df["LUGAR"].dropna().unique())
-)
-
-df_filtrado = df[
-    (df["ESTADO"].isin(estado_sel)) &
-    (df["RESPONSABLE"].isin(responsable_sel)) &
-    (df["LUGAR"].isin(lugar_sel))
-].copy()
+df_filtrado = df[df["ESTADO"].isin(estado_sel)].copy()
 
 # =========================
 # Indicadores
