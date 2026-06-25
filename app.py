@@ -63,19 +63,21 @@ df["PERIODO"] = (
 # Filtros
 # =========================
 
-st.subheader("Filtro")
+st.subheader("Filtros")
 
-estado_opciones = ["TODOS"] + sorted(df["ESTADO"].dropna().unique())
+with st.expander("Seleccionar estado del curso", expanded=False):
 
-estado_sel = st.selectbox(
-    "Estado del curso",
-    options=estado_opciones
-)
+    estado_sel = st.multiselect(
+        "Estado",
+        options=sorted(df["ESTADO"].dropna().unique()),
+        default=sorted(df["ESTADO"].dropna().unique()),
+        placeholder="Seleccione uno o varios estados"
+    )
 
-if estado_sel == "TODOS":
+if len(estado_sel) == 0:
     df_filtrado = df.copy()
 else:
-    df_filtrado = df[df["ESTADO"] == estado_sel].copy()
+    df_filtrado = df[df["ESTADO"].isin(estado_sel)].copy()
 
 # =========================
 # Indicadores
