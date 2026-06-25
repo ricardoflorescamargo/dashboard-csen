@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import plotly.express as px
 import matplotlib.dates as mdates
 from matplotlib.patches import Rectangle
 import textwrap
@@ -238,6 +239,37 @@ fig.legend(
 plt.tight_layout(rect=[0.02, 0.12, 0.98, 0.90])
 
 st.pyplot(fig)
+st.subheader("Cronograma Interactivo")
+
+fig_interactivo = px.timeline(
+    df,
+    x_start="FECHA INICIO",
+    x_end="FECHA FINAL",
+    y="NOMBRE DEL CURSO",
+    color="ESTADO",
+    hover_data=[
+        "LUGAR",
+        "RESPONSABLE",
+        "ACCIONES",
+        "COORDINADOR"
+    ],
+    color_discrete_map={
+        "EJECUCION": "#2E8B57",
+        "EJECUCIÓN": "#2E8B57",
+        "PROGRAMADO": "#1E63D6"
+    }
+)
+
+fig_interactivo.update_yaxes(autorange="reversed")
+
+fig_interactivo.update_layout(
+    height=700,
+    title="Cronograma Interactivo de Cursos",
+    xaxis_title="Fecha",
+    yaxis_title="Curso"
+)
+
+st.plotly_chart(fig_interactivo, use_container_width=True)
 
 st.subheader("Matriz de cursos")
 columnas_visibles = [
