@@ -238,17 +238,24 @@ fig.legend(
 
 plt.tight_layout(rect=[0.02, 0.12, 0.98, 0.90])
 
-st.pyplot(fig)
+#st.pyplot(fig)
 st.subheader("Cronograma Interactivo")
 
+df_plot = df.copy()
+df_plot["TEXTO_FECHA"] = (
+    df_plot["FECHA INICIO"].dt.strftime("%d/%m")
+    + " - "
+    + df_plot["FECHA FINAL"].dt.strftime("%d/%m")
+)
+
 fig_interactivo = px.timeline(
-    df,
+    df_plot,
     x_start="FECHA INICIO",
     x_end="FECHA FINAL",
     y="NOMBRE DEL CURSO",
     color="ESTADO",
+    text="TEXTO_FECHA",
     hover_data=["LUGAR", "RESPONSABLE", "ACCIONES", "COORDINADOR"],
-    text=df["FECHA INICIO"].dt.strftime("%d/%m") + " - " + df["FECHA FINAL"].dt.strftime("%d/%m"),
     color_discrete_map={
         "EJECUCION": "#2E8B57",
         "EJECUCIÓN": "#2E8B57",
@@ -258,41 +265,58 @@ fig_interactivo = px.timeline(
 
 fig_interactivo.update_yaxes(
     autorange="reversed",
-    tickfont=dict(size=11),
     title="",
+    tickfont=dict(size=13, color="#082B63"),
+    automargin=True
 )
 
 fig_interactivo.update_traces(
-    textposition="inside",
-    textfont=dict(size=11, color="white"),
+    textposition="outside",
+    textfont=dict(size=12, color="#082B63"),
     marker_line_color="white",
-    marker_line_width=1,
-    width=0.45
+    marker_line_width=1.5,
+    width=0.42
 )
 
 fig_interactivo.update_xaxes(
     side="top",
     showgrid=True,
     gridcolor="#D8E0EA",
-    tickformat="%d/%m/%Y",
+    linecolor="#082B63",
+    linewidth=1,
+    mirror=True,
+    tickformat="%b %Y",
     dtick="M1",
     title=""
 )
 
 fig_interactivo.update_yaxes(
     showgrid=True,
-    gridcolor="#EEF2F7"
+    gridcolor="#EEF2F7",
+    linecolor="#082B63",
+    linewidth=1,
+    mirror=True
 )
 
 fig_interactivo.update_layout(
-    height=750,
-    title="Cronograma Interactivo de Cursos",
-    title_font=dict(size=20, color="#082B63"),
+    height=760,
     plot_bgcolor="white",
     paper_bgcolor="white",
-    font=dict(size=12, color="#082B63"),
-    margin=dict(l=260, r=40, t=90, b=60),
-    legend_title_text="Estado"
+    font=dict(size=13, color="#082B63"),
+    margin=dict(l=30, r=40, t=80, b=60),
+    legend_title_text="Estado",
+    title=dict(
+        text="Cronograma de Cursos Ordinarios 2026",
+        x=0.01,
+        xanchor="left",
+        font=dict(size=22, color="#082B63")
+    ),
+    xaxis=dict(
+        range=[
+            pd.Timestamp("2026-03-01"),
+            pd.Timestamp("2026-09-30")
+        ]
+    )
 )
 
 st.plotly_chart(fig_interactivo, use_container_width=True)
