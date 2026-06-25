@@ -3,9 +3,22 @@ import pandas as pd
 import plotly.express as px
 
 st.set_page_config(page_title="Dashboard CSEN 2026", layout="wide")
+st.markdown(
+    """
+    <div style="background-color:#082B63; padding:22px; border-radius:12px; margin-bottom:20px;">
+        <h1 style="color:white; margin:0;">Dashboard de Seguimiento de Cursos CSEN 2026</h1>
+        <p style="color:#D8E0EA; margin:6px 0 0 0; font-size:18px;">
+            Cronograma, estado y seguimiento académico de cursos
+        </p>
+        <p style="color:#D8E0EA; margin:6px 0 0 0; font-size:14px;">
+            Actualizado: 24 de junio de 2026
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-st.title("Dashboard de Seguimiento de Cursos CSEN 2026")
-st.caption("Actualizado: 24 de junio de 2026")
+#st.image("logo.png", width=120)
 
 # =========================
 # Leer Google Sheet
@@ -50,15 +63,19 @@ df["PERIODO"] = (
 # Filtros
 # =========================
 
-st.subheader("Filtrar por estado")
+st.subheader("Filtro")
 
-estado_sel = st.multiselect(
+estado_opciones = ["TODOS"] + sorted(df["ESTADO"].dropna().unique())
+
+estado_sel = st.selectbox(
     "Estado del curso",
-    options=sorted(df["ESTADO"].dropna().unique()),
-    default=sorted(df["ESTADO"].dropna().unique())
+    options=estado_opciones
 )
 
-df_filtrado = df[df["ESTADO"].isin(estado_sel)].copy()
+if estado_sel == "TODOS":
+    df_filtrado = df.copy()
+else:
+    df_filtrado = df[df["ESTADO"] == estado_sel].copy()
 
 # =========================
 # Indicadores
