@@ -292,34 +292,54 @@ fig_go.add_trace(
     col=1
 )
 
-for estado, color in {
-    "EJECUCION": "#2E8B57",
-    "EJECUCIÓN": "#2E8B57",
-    "PROGRAMADO": "#1E63D6"
-}.items():
+for i, row in df_go.iterrows():
 
-    dff = df_go[df_go["ESTADO"] == estado]
+    color = "#2E8B57" if row["ESTADO"] in ["EJECUCION", "EJECUCIÓN"] else "#1E63D6"
 
     fig_go.add_trace(
-        go.Bar(
-            x=dff["DURACION"],
-            y=dff["NOMBRE DEL CURSO"],
-            base=dff["FECHA INICIO"],
-            orientation="h",
-            name=estado,
-            marker=dict(color=color),
-            text=dff["FECHA TEXTO"],
-            textposition="outside",
+        go.Scatter(
+            x=[row["FECHA INICIO"], row["FECHA FINAL"]],
+            y=[row["NOMBRE DEL CURSO"], row["NOMBRE DEL CURSO"]],
+            mode="lines+text",
+            line=dict(
+                color=color,
+                width=22
+            ),
+            text=["", row["FECHA TEXTO"]],
+            textposition="middle right",
+            name=row["ESTADO"],
             hovertemplate=(
-                "<b>%{y}</b><br>"
-                "Inicio: %{base|%d/%m/%Y}<br>"
-                "Duración: %{x} días<br>"
-                "<extra></extra>"
-            )
+                "<b>" + row["NOMBRE DEL CURSO"] + "</b><br>"
+                "Lugar: " + str(row["LUGAR"]) + "<br>"
+                "Responsable: " + str(row["RESPONSABLE"]) + "<br>"
+                "Inicio: " + row["FECHA INICIO"].strftime("%d/%m/%Y") + "<br>"
+                "Fin: " + row["FECHA FINAL"].strftime("%d/%m/%Y") + "<extra></extra>"
+            ),
+            showlegend=False
         ),
         row=1,
         col=2
     )
+fig_go.add_trace(
+    go.Scatter(
+        x=[None],
+        y=[None],
+        mode="lines",
+        line=dict(color="#2E8B57", width=12),
+        name="EJECUCIÓN"
+    )
+)
+
+fig_go.add_trace(
+    go.Scatter(
+        x=[None],
+        y=[None],
+        mode="lines",
+        line=dict(color="#1E63D6", width=12),
+        name="PROGRAMADO"
+    )
+)
+
 
 fig_go.update_yaxes(
     autorange="reversed",
